@@ -9,7 +9,7 @@ from fourier_dhx.sdk.DexHand import DexHand
 # For right hand use IP: 192.168.137.19
 
 _back, _stop = [-200, -200, -200, -200, -200, -200], [0, 0, 0, 0, 0, 0]
-HAND_IP = "192.168.137.39"  # Change to the appropriate IP address
+HAND_IP = "192.168.137.19"  # Change to the appropriate IP address
 hand = DexHand(HAND_IP)
 hand.set_pwm(_back)
 hand.calibration()
@@ -21,7 +21,7 @@ hand.set_angle(0, angle)
 time.sleep(1)
 
 # verify
-pos = hand.get_pos()
+pos = hand.get_pos_limited()
 print(pos)
 
 

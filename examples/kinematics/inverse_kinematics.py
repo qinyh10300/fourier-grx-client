@@ -26,7 +26,7 @@ def rotation_matrix_to_xyz_quat(rotation_matrix: np.ndarray):
 
 def main():
     # Create a RobotClient object and connect to the robot server
-    client = RobotClient(namespace="gr/my_awesome_robot", server_ip="localhost")
+    client = RobotClient(namespace="gr/my_awesome_robot", server_ip="192.168.137.252")
 
     try:
         # Get the forward kinematics of the left arm

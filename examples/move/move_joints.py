@@ -10,7 +10,7 @@ Before running this script, make sure to have the fourier_grx package installed 
 
 def main():
     # Create a RobotClient object and connect to the robot server
-    client = RobotClient(namespace="gr/my_awesome_robot", server_ip="localhost")
+    client = RobotClient(namespace="gr/my_awesome_robot", server_ip="192.168.137.252")
 
     try:
         # Enable the robot motors

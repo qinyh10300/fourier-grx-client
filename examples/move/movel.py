@@ -24,7 +24,7 @@ def rotation_matrix_to_xyz_quat(rotation_matrix: np.ndarray):
 
 def main():
     # Create a RobotClient object and connect to the robot server
-    client = RobotClient(namespace="gr/my_awesome_robot", server_ip="localhost")
+    client = RobotClient(namespace="gr/my_awesome_robot", server_ip="192.168.137.252")
 
     try:
         # Enable the robot motors
@@ -33,7 +33,7 @@ def main():
         time.sleep(1)
 
         # Move the joints of arms to home position
-        client.move_joints(ControlGroup.UPPER, [0.0]*14, duration=1.0)
+        client.move_joints(ControlGroup.UPPER, [0.0]*14, duration=0.0)
         logger.success("Arm joints returned to home position")
         time.sleep(1)
 
