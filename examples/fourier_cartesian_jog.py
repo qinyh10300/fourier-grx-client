@@ -47,7 +47,7 @@ def main():
                 # Get the forward kinematics of the left arm using current joint positions
                 chain = ["left_arm"]
                 fk_output = client.forward_kinematics(chain)
-                pose_current_mat = fk_output[0]
+                pose_current_mat = fk_output[0].copy()
 
                 rpy: np.ndarray = R.from_matrix(pose_current_mat[:3,:3]).as_euler('xyz', degrees=True)
                 xyz: np.ndarray = pose_current_mat[:3,3]
@@ -84,21 +84,30 @@ def main():
                     sign: int = 1 if inp == 'w' else -1
 
                     if translation_mode:
+                        # print(xyz, xyz[1])
+                        # xyz[1] += 2
+                        # print(xyz, xyz[1], type(xyz))
                         xyz[TRANSLATION_MODES.index(current_mode)] += current_step * sign
                     else:
                         rpy[ROTATION_MODES.index(current_mode)] += current_step * sign
 
                     # 计算目标姿态
-                    pose_current_mat[:3,:3] = R.from_euler('xyz', rpy, degrees=True).as_matrix()
-                    pose_current_mat[:3,3] = xyz
+                    pose_current_mat[:3,:3] = R.from_euler('xyz', rpy.copy(), degrees=True).as_matrix()
+                    pose_current_mat[:3,3] = xyz.copy()
 
                     # 移动机械臂
-                    print(pose_current_mat, type(pose_current_mat))
-                    # client.inverse_kinematics(chain_names=['left_arm'], targets=[pose_current_mat], move=True)
+                    # print(pose_current_mat, type(pose_current_mat))
+                    # print("*********************************************************")
+                    # client.movel(["left"], target_poses=[pose_current_mat])
+                    pos = client.inverse_kinematics(chain_names=['left_arm'], targets=[pose_current_mat], move=True)
+                    print(pos)
                 else:
                     askForCommand()
 
                 time.sleep(0.1)
+
+        except Exception as ex:
+            print("出现以下异常%s"%ex)
 
         finally:
             # Disable the robot motors

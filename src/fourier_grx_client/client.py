@@ -701,6 +701,7 @@ class RobotClient(ZenohSession):
             max_jerk: float | None = None,
             move: bool = True,
     ) -> list[np.ndarray]:
+        # print("*********************************************************")
         """Move the specified arm to the target position.
 
         Args:
@@ -715,6 +716,7 @@ class RobotClient(ZenohSession):
             list: The trajectory to reach the target pose.
         """
 
+        # print("*********************************************************")
         curr_poses = self.forward_kinematics([f"{side}_arm" for side in sides])
         curr_poses = [se3_to_xyzquat(pose.copy()) for pose in curr_poses]
 
@@ -723,6 +725,7 @@ class RobotClient(ZenohSession):
         for i, target_pose in enumerate(target_poses):
             if target_pose.shape == (4, 4):
                 target_poses[i] = se3_to_xyzquat(target_pose)
+                # print(target_poses[i])
 
         traj = self._call_service_wait(
             "control/movel",

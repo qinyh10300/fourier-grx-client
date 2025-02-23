@@ -29,7 +29,7 @@ def main():
 
         np.set_printoptions(precision=4, suppress=True)
         jog_step: float = 3 # in degree
-        ctrl_joint: int = 1
+        ctrl_joint: int = 0
         last_command: str = "1"
 
         askForCommand()
@@ -65,7 +65,8 @@ def main():
 
                     raw_pose = curr_pose[ctrl_joint]
                     curr_pose[ctrl_joint] += math.radians(jog_step) * sign
-                    # client.move_joints([ctrl_joint], [curr_pose[ctrl_joint]], degrees=False)
+                    client.move_joints([ctrl_joint], [curr_pose[ctrl_joint]], degrees=False)
+                    print()
                     print("Joint %d pos %.4f -> %.4f," % (ctrl_joint, raw_pose, curr_pose[ctrl_joint]), "Sending:", np.asanyarray(curr_pose))
                 elif inp == 'q':
                     break
