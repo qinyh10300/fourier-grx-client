@@ -24,8 +24,11 @@ def main():
             while True:
                 press_events = key_counter.get_press_events()
                 for key_stroke in press_events:
-                    if key_stroke == KeyCode(char='q'):
+                    if key_counter == KeyCode(char='s'):
+                        client.set_enable(False)
+                    elif key_stroke == KeyCode(char='q'):
                         flag = 1
+                        client.set_enable(True)
                         break
                 if flag:
                     break
