@@ -6,6 +6,8 @@ from keystroke_counter import (
     KeystrokeCounter, Key, KeyCode
 )
 import json
+import os
+import numpy as np
 
 def main():
     # Create a RobotClient object and connect to the robot server
@@ -17,6 +19,11 @@ def main():
         logger.info("Motors enabled")
         time.sleep(1)
 
+        file_path = "./traj/record_joint.json"
+        dir_path = os.path.dirname(file_path)
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+
         with KeystrokeCounter() as key_counter:
             flag = 0
             traj = {}
@@ -24,24 +31,31 @@ def main():
             while True:
                 press_events = key_counter.get_press_events()
                 for key_stroke in press_events:
-                    if key_counter == KeyCode(char='s'):
-                        client.set_enable(False)
-                    elif key_stroke == KeyCode(char='q'):
+                    if key_stroke == KeyCode(char='s'):
                         flag = 1   
+                        client.set_enable(False)
+                        logger.success("Start Recording!")
+                    elif key_stroke == KeyCode(char='q'):
+                        flag = -1   
                         client.set_enable(True)
+                        logger.success("Stop Recording!")
                         break
-                if flag:
+                    
+                if flag == -1:
                     break
-                
-                joint_positions = client.joint_positions.copy()
-                traj[cnt] = {  
-                    "joint_pos": joint_positions
-                } 
-                cnt += 1
+                elif flag == 1:
+                    joint_positions = client.joint_positions.copy()
+                    joint_positions = joint_positions.tolist() if isinstance(joint_positions, np.ndarray) else joint_positions
+                    traj[cnt] = {  
+                        "joint_pos": joint_positions
+                    } 
+                    cnt += 1
+                    print(cnt)
+                    time.sleep(0.01)
 
-        # 保存字典为 JSON 文件
-        with open("./traj/record_joint.json", "w") as json_file:
+        with open(file_path, "w") as json_file:
             json.dump(traj, json_file, indent=4)
+        # print(traj)
 
         # Disable the robot motors
         client.disable()

@@ -6,6 +6,7 @@ from keystroke_counter import (
     KeystrokeCounter, Key, KeyCode
 )
 import json
+import numpy as np
 
 def main():
     # Create a RobotClient object and connect to the robot server
@@ -18,10 +19,14 @@ def main():
         time.sleep(1)
 
         # 从 JSON 文件读取字典
-        with open("./traj/record_cartesian.json", "r") as json_file:
+        file_path = "traj/record_cartesian.json"
+        with open(file_path, "r") as json_file:
             traj = json.load(json_file)
 
-        client.move_joints(ControlGroup.ALL, traj[0]["joint_pos"], duration=2, degrees=False, blocking=False)
+        logger.info("Moving to start pose")
+        left_arm_pose = np.array(traj['0']["left_arm"])
+        right_arm_pose = np.array(traj['0']["right_arm"])
+        pos = client.inverse_kinematics(chain_names=['left_arm', 'right_arm'], targets=[left_arm_pose, right_arm_pose], move=True)
         time.sleep(3)
 
         with KeystrokeCounter() as key_counter:
@@ -33,18 +38,20 @@ def main():
                     if key_stroke == KeyCode(char='w'):
                         index = min(len(traj) - 1, index + 1)
                         flag = 1
+                        print(index)
                     elif key_stroke == KeyCode(char='s'):
                         index = max(0, index - 1)
                         flag = 1
+                        print(index)
                     elif key_stroke == KeyCode(char='q'):
                         flag = -1
                         break
 
                 if flag == 1:
-                    left_arm_pose = traj[index]["left_arm"]
-                    right_arm_pose = traj[index]["right_arm"]
-                    pos = client.inverse_kinematics(chain_names=['left_arm', 'right_arm'], targets=[left_arm_pose, right_arm_pose], move=False)
-                    print(pos)
+                    left_arm_pose = np.array(traj[f'{index}']["left_arm"])
+                    right_arm_pose = np.array(traj[f'{index}']["right_arm"])
+                    pos = client.inverse_kinematics(chain_names=['left_arm', 'right_arm'], targets=[left_arm_pose, right_arm_pose], move=True)
+                    # print(pos)
                     time.sleep(0.1)
                     flag = 0
                 elif flag == -1:
