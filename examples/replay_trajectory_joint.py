@@ -61,7 +61,7 @@ def main():
 
                 if flag == 1:
                     client.move_joints(ControlGroup.ALL, np.array(traj[f"{index}"]["joint_pos"]), duration=0.0, degrees=False, blocking=False)
-                    time.sleep(0.15)
+                    time.sleep(0.1)
                     joint_positions = client.joint_positions.copy()
                     joint_positions = joint_positions.tolist() if isinstance(joint_positions, np.ndarray) else joint_positions
                     replay[index] = {  

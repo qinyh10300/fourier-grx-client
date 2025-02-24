@@ -17,4 +17,8 @@ for i in range(length):
     error = np.abs(record_joint_pos - replay_joint_pos)
     sum_error += error
 
-print(sum_error/length)
+print(sum_error/length, length)
+
+joint_error_path = "traj/joint_error.txt"
+with open(joint_error_path, "w") as joint_error_path:
+    print(sum_error/length, file=joint_error_path)

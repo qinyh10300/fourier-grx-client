@@ -7,7 +7,7 @@ from keystroke_counter import (
 )
 import numpy as np
 import json
-import os
+import ossq
 
 def main():
     # Create a RobotClient object and connect to the robot server

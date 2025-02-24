@@ -61,10 +61,12 @@ def main():
                         index = min(len(traj) - 1, index + 1)
                         flag = 1
                         print(index)
+                        break
                     elif key_stroke == KeyCode(char='s'):
                         index = max(0, index - 1)
                         flag = 1
                         print(index)
+                        break
                     elif key_stroke == KeyCode(char='q'):
                         flag = -1
                         break
