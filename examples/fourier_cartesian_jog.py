@@ -101,6 +101,10 @@ def main():
                     # client.movel(["left"], target_poses=[pose_current_mat])
                     pos = client.inverse_kinematics(chain_names=['left_arm'], targets=[pose_current_mat], move=True)
                     print(pos)
+
+                    # pos = client.inverse_kinematics(chain_names=['left_arm'], targets=[pose_current_mat], move=False).copy()
+                    # print(pos)
+                    # client.move_joints(ControlGroup.ALL, pos, duration=0.0, degrees=False, blocking=False)
                 else:
                     askForCommand()
 

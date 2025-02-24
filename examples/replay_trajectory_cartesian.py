@@ -7,6 +7,7 @@ from keystroke_counter import (
 )
 import json
 import numpy as np
+import os
 
 def main():
     # Create a RobotClient object and connect to the robot server
@@ -17,6 +18,11 @@ def main():
         client.enable()
         logger.info("Motors enabled")
         time.sleep(1)
+
+        replay_file_path = "./traj/replay_cartesian.json"
+        replay_dir_path = os.path.dirname(replay_file_path)
+        if not os.path.exists(replay_dir_path):
+            os.makedirs(replay_dir_path)
 
         # 从 JSON 文件读取字典
         file_path = "traj/record_cartesian.json"
@@ -32,6 +38,22 @@ def main():
         with KeystrokeCounter() as key_counter:
             flag = 0
             index = 0
+            replay = {}
+
+            chain = ["left_arm"]
+            fk_output = client.forward_kinematics(chain)
+            left_arm_pose = fk_output[0].copy()
+            left_arm_pose = left_arm_pose.tolist() if isinstance(left_arm_pose, np.ndarray) else left_arm_pose
+
+            chain = ["right_arm"]
+            fk_output = client.forward_kinematics(chain)
+            right_arm_pose = fk_output[0].copy()
+            right_arm_pose = right_arm_pose.tolist() if isinstance(right_arm_pose, np.ndarray) else right_arm_pose
+
+            replay[0] = {  
+                "left_arm": left_arm_pose,
+                "right_arm": right_arm_pose
+            } 
             while True:
                 press_events = key_counter.get_press_events()
                 for key_stroke in press_events:
@@ -52,10 +74,28 @@ def main():
                     right_arm_pose = np.array(traj[f'{index}']["right_arm"])
                     pos = client.inverse_kinematics(chain_names=['left_arm', 'right_arm'], targets=[left_arm_pose, right_arm_pose], move=True)
                     # print(pos)
-                    time.sleep(0.1)
+                    time.sleep(0.15)
+
+                    chain = ["left_arm"]
+                    fk_output = client.forward_kinematics(chain)
+                    left_arm_pose = fk_output[0].copy()
+                    left_arm_pose = left_arm_pose.tolist() if isinstance(left_arm_pose, np.ndarray) else left_arm_pose
+
+                    chain = ["right_arm"]
+                    fk_output = client.forward_kinematics(chain)
+                    right_arm_pose = fk_output[0].copy()
+                    right_arm_pose = right_arm_pose.tolist() if isinstance(right_arm_pose, np.ndarray) else right_arm_pose
+
+                    replay[index] = {  
+                        "left_arm": left_arm_pose,
+                        "right_arm": right_arm_pose
+                    } 
                     flag = 0
                 elif flag == -1:
                     break
+
+        with open(replay_dir_path, "w") as json_file:
+            json.dump(replay, json_file, indent=4)
 
         # Disable the robot motors
         client.disable()
