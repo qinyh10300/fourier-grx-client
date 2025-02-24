@@ -94,7 +94,7 @@ def main():
                 elif flag == -1:
                     break
 
-        with open(replay_dir_path, "w") as json_file:
+        with open(replay_file_path, "w") as json_file:
             json.dump(replay, json_file, indent=4)
 
         # Disable the robot motors
