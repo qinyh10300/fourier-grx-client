@@ -25,7 +25,7 @@ def main():
             os.makedirs(replay_dir_path)
 
         # 从 JSON 文件读取字典
-        file_path = "traj/record_joint.json"
+        file_path = "./traj/record_joint.json"
         with open(file_path, "r") as json_file:
             traj = json.load(json_file)
 
@@ -71,7 +71,7 @@ def main():
                 elif flag == -1:
                     break
 
-        with open(replay_dir_path, "w") as json_file:
+        with open(replay_file_path, "w") as json_file:
             json.dump(replay, json_file, indent=4)
 
         # Disable the robot motors

@@ -1,76 +1,13 @@
-from fourier_grx_client import RobotClient, ControlGroup
-from loguru import logger
-import time
-import sys
-from keystroke_counter import (
-    KeystrokeCounter, Key, KeyCode
-)
+import os
+import json
 
-def main():
-    # Create a RobotClient object and connect to the robot server
-    client = RobotClient(namespace="gr/my_awesome_robot", server_ip="192.168.137.252")
+replay_file_path = "./traj/replay_joint.json"
+replay_dir_path = os.path.dirname(replay_file_path)
+print(replay_dir_path, replay_file_path)
+if not os.path.exists(replay_dir_path):
+    os.makedirs(replay_dir_path)
 
-    try:
-        # Enable the robot motors
-        client.enable()
-        logger.info("Motors enabled")
-        time.sleep(1)
+replay = {}
 
-        # # Move the joints of arms to home position
-        # client.move_joints(ControlGroup.UPPER, [0.0]*14, duration=1.0)
-        # logger.success("Arm joints returned to home position")
-        # time.sleep(1)
-        
-        # # Prepare the target positions for the arms
-        # sides = ['left', 'right']
-        # target_position_left = [-0.23, 0.2, 0.22, 0.1, 0.8, 0.0, 0.0]
-        # target_position_right = [0.01, -0.07, -0.05, -0.9, 0.02, 0.0, 0.0]
-        # target_positions = [target_position_left, target_position_right]
-
-        # # Move the joints of the arms to target positions using movej
-        # traj=client.movej(sides, target_positions)
-        # logger.success("Arm joints moved to target positions")
-        # time.sleep(1)
-
-        # # Move the joints of arms to home position
-        # client.move_joints(ControlGroup.UPPER, [0.0]*14, duration=1.0)
-        # logger.success("Arm joints returned to home position")
-        # time.sleep(1)
-
-        with KeystrokeCounter() as key_counter:
-            flag = 0
-            while True:
-                press_events = key_counter.get_press_events()
-                for key_stroke in press_events:
-                    if key_stroke == KeyCode(char='q'):
-                        flag = 1
-                        break
-                    # elif key_counter == KeyCode(char='w'):
-                        
-                    # elif key_counter == KeyCode(char='s'):
-
-                if flag:
-                    break
-                
-                head_pos = client.get_group_position_by_name('head')
-                print(head_pos, type(head_pos))
-                # client.move_joints('head', head_pos + , degrees=False)
-
-        # Disable the robot motors
-        client.disable()
-        logger.info("Motors disabled")
-
-        # Close the connection to the robot server
-        client.close()
-        return True
-    except Exception as e:
-        logger.error(f"Error occured: {e}")
-        return False
-
-if __name__ == '__main__':
-    if not main():
-        sys.exit(1)
-    
-
-
-
+with open(replay_file_path, "w") as json_file:
+        json.dump(replay, json_file, indent=4)
