@@ -307,7 +307,7 @@ robot_config:
   # if you want to lock some joints in kinematics solving, add them to the list below
   joints_to_lock: [
   # uncomment the following lines to lock the waist joints in kinematics solving
-      # "waist_yaw_joint",
-      # "waist_pitch_joint",
-      # "waist_roll_joint"
+      "waist_yaw_joint",
+      "waist_pitch_joint",
+      "waist_roll_joint"
   ]
