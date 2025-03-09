@@ -93,7 +93,7 @@ def main():
                         "right_arm": right_arm_pose
                     } 
                     print(left_arm_pose)
-                    # flag = 0
+                    flag = 0
                 elif flag == -1:
                     break
 
