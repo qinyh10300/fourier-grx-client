@@ -76,7 +76,7 @@ def main():
                     right_arm_pose = np.array(traj[f'{index}']["right_arm"])
                     pos = client.inverse_kinematics(chain_names=['left_arm', 'right_arm'], targets=[left_arm_pose, right_arm_pose], move=True)
                     # print(pos)
-                    time.sleep(0.15)
+                    time.sleep(0.02)
 
                     chain = ["left_arm"]
                     fk_output = client.forward_kinematics(chain)
@@ -92,7 +92,8 @@ def main():
                         "left_arm": left_arm_pose,
                         "right_arm": right_arm_pose
                     } 
-                    flag = 0
+                    print(left_arm_pose)
+                    # flag = 0
                 elif flag == -1:
                     break
 

@@ -36,7 +36,7 @@ class FourierInterface:
         # Close the connection to the robot server
         self.client.close()
     
-    def execute(self, xyz_rpy: np.ndarray, degrees: bool = False, blocking: bool = True):
+    def execute(self, xyz_rpy: np.ndarray, degrees: bool = False, blocking: bool = False):
         pose_mat = pose_to_mat(xyz_rpy)
         ik_joint_pos = self.client.inverse_kinematics(chain_names=[self.which_arm], targets=[pose_mat], move=False)
         

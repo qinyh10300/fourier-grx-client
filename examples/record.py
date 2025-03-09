@@ -19,7 +19,7 @@ def main():
         logger.info("Motors enabled")
         time.sleep(1)
 
-        file_path = "./traj/record_cartesian.json"
+        file_path = "./traj/record_cartesian_calibration.json"
         dir_path = os.path.dirname(file_path)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
@@ -28,6 +28,7 @@ def main():
             flag = 0
             traj = {}
             cnt = 0
+            client.set_enable(False)
             while True:
                 press_events = key_counter.get_press_events()
                 for key_stroke in press_events:
@@ -47,18 +48,13 @@ def main():
                     left_arm_pose = fk_output[0].copy()
                     left_arm_pose = left_arm_pose.tolist() if isinstance(left_arm_pose, np.ndarray) else left_arm_pose
 
-                    chain = ["right_arm"]
-                    fk_output = client.forward_kinematics(chain)
-                    right_arm_pose = fk_output[0].copy()
-                    right_arm_pose = right_arm_pose.tolist() if isinstance(right_arm_pose, np.ndarray) else right_arm_pose
-
                     traj[cnt] = {  
                         "left_arm": left_arm_pose,
-                        "right_arm": right_arm_pose
                     } 
                     cnt += 1
-                    print(cnt, left_arm_pose)
+                    print(cnt)
                     time.sleep(0.01)
+                    flag = 0
                 elif flag == -1:
                     break
 
