@@ -77,16 +77,26 @@ def main():
                         flag = -1
                         break
 
-                if flag == 1:
-                    relative_pose = compute_relative_pose(poses[index], reference_pose)
-                    target_pose_matrix = pose_to_matrix(start_pose) @ pose_to_matrix(relative_pose)
-                    target_pose = matrix_to_pose(target_pose_matrix)
-                    pos = client.inverse_kinematics(chain_names=['left_arm'], targets=[target_pose.tolist()], move=True)
-                    time.sleep(0.02)
+                relative_pose = compute_relative_pose(poses[index], reference_pose)
+                target_pose_matrix = pose_to_matrix(start_pose) @ pose_to_matrix(relative_pose)
+                target_pose = matrix_to_pose(target_pose_matrix)
+                pos = client.inverse_kinematics(chain_names=['left_arm'], targets=[target_pose.tolist()], move=True)
+                time.sleep(0.01)
+                flag = 0
 
-                    flag = 0
-                elif flag == -1:
+                if flag == -1:
                     break
+
+                # if flag == 1:
+                #     relative_pose = compute_relative_pose(poses[index], reference_pose)
+                #     target_pose_matrix = pose_to_matrix(start_pose) @ pose_to_matrix(relative_pose)
+                #     target_pose = matrix_to_pose(target_pose_matrix)
+                #     pos = client.inverse_kinematics(chain_names=['left_arm'], targets=[target_pose.tolist()], move=True)
+                #     time.sleep(0.02)
+
+                #     flag = 0
+                # elif flag == -1:
+                #     break
 
         # Disable the robot motors
         client.disable()
