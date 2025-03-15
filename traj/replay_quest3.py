@@ -1,14 +1,29 @@
+import sys
+import os
+
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+print(ROOT_DIR)
+sys.path.append(ROOT_DIR)
+os.chdir(ROOT_DIR)
+
 from fourier_grx_client import RobotClient, ControlGroup
 from loguru import logger
 import time
 import sys
-from keystroke_counter import (
+from examples.keystroke_counter import (
     KeystrokeCounter, Key, KeyCode
 )
 import json
 import numpy as np
 import os
 from scipy.spatial.transform import Rotation as R
+from real_world.fourier_grx.pose_utils import pose_to_mat, mat_to_pose 
+
+tx_cam_flange = np.array([[ 0.14299907, -0.63646142,  0.75793676,  0.13104531] ,
+                            [-0.98968002, -0.09907623,  0.10352463,  0.05537138] ,
+                            [ 0.00920408, -0.7649188,  -0.64406096,  0.05656959] ,
+                            [ 0.        ,  0.        ,  0.        ,  1.        ]])
+tx_flange_cam = np.linalg.inv(tx_cam_flange)
 
 def read_poses(filepath):
     poses = []
@@ -49,10 +64,10 @@ def main():
 
         chain = ["left_arm"]
         fk_output = client.forward_kinematics(chain)
-        start_pose = fk_output[0].copy()
+        start_pose = fk_output[0].copy() @ tx_cam_flange
 
         # 从 converted_poses.txt 文件读取位姿数据
-        file_path = "traj/converted_poses.txt"
+        file_path = "/home/rvsa/codehub/fourier-grx-client/traj/demo_C3464280101035_2025.03.07_10.53.23.088714/converted_poses.txt"
         poses = read_poses(file_path)
         reference_pose = poses[0]
 
@@ -79,12 +94,14 @@ def main():
 
                 if flag == 1:
                     relative_pose = compute_relative_pose(poses[index], reference_pose)
-                    target_pose_matrix = pose_to_matrix(start_pose) @ pose_to_matrix(relative_pose)
+                    target_pose_matrix = start_pose @ pose_to_matrix(relative_pose)
+                    target_pose_matrix = target_pose_matrix @ tx_flange_cam
                     target_pose = matrix_to_pose(target_pose_matrix)
-                    pos = client.inverse_kinematics(chain_names=['left_arm'], targets=[target_pose.tolist()], move=True)
+                    print([target_pose], type(target_pose_matrix))
+                    pos = client.inverse_kinematics(chain_names=['left_arm'], targets=[target_pose_matrix], move=True)
                     time.sleep(0.02)
 
-                    flag = 0
+                    # flag = 0
                 elif flag == -1:
                     break
 
@@ -96,8 +113,16 @@ def main():
         client.close()
         return True
     except Exception as e:
+        # Disable the robot motors
+        client.disable()
+        logger.info("Motors disabled")
+
+        # Close the connection to the robot server
+        client.close()
         logger.error(f"Error occured: {e}")
         return False
+    # finally:
+    #     pass
 
 if __name__ == '__main__':
     if not main():
